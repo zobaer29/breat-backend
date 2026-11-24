@@ -6,6 +6,19 @@ require('dotenv').config();
 const connectDB = require('./config/db');
 
 const app = express();
+const allowedOrigins = new Set([
+  "https://breat.org",
+  "https://www.breat.org",
+  ...(process.env.FRONTEND_ORIGINS || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+]);
+
+if (process.env.NODE_ENV !== "production") {
+  allowedOrigins.add("http://localhost:3000");
+  allowedOrigins.add("http://127.0.0.1:3000");
+}
 
 // Serverless DB connection middleware
 app.use(async (req, res, next) => {
@@ -16,8 +29,9 @@ app.use(async (req, res, next) => {
 // Middleware
 app.use(
   cors({
-    origin: true,
-    credentials: true,
+    origin(origin, callback) {
+      callback(null, !origin || allowedOrigins.has(origin));
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })

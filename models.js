@@ -40,6 +40,7 @@ const ProjectSchema = new mongoose.Schema(
     link: { type: String },
     driveLink: { type: String },
     reportLink: { type: String },
+    published: { type: Boolean, default: true },
   },
   { strict: false }
 );
@@ -56,6 +57,7 @@ const CampaignSchema = new mongoose.Schema(
     link: { type: String },
     driveLink: { type: String },
     reportLink: { type: String },
+    published: { type: Boolean, default: true },
   },
   { strict: false }
 );
@@ -74,6 +76,7 @@ const EventSchema = new mongoose.Schema(
     link: { type: String },
     driveLink: { type: String },
     reportLink: { type: String },
+    published: { type: Boolean, default: true },
   },
   { strict: false }
 );
@@ -92,6 +95,7 @@ const TrainingSchema = new mongoose.Schema(
     link: { type: String },
     driveLink: { type: String },
     reportLink: { type: String },
+    published: { type: Boolean, default: true },
   },
   { strict: false }
 );
@@ -116,6 +120,7 @@ const PublicationSchema = new mongoose.Schema(
     driveLink: { type: String },
     reportLink: { type: String },
     year: { type: String },
+    published: { type: Boolean, default: true },
     type: {
       type: String,
       enum: [
@@ -150,6 +155,7 @@ const PartnerSchema = new mongoose.Schema(
     logo: { type: String },
     link: { type: String },
     driveLink: { type: String },
+    published: { type: Boolean, default: true },
   },
   { strict: false }
 );
@@ -185,6 +191,7 @@ const MetricSchema = new mongoose.Schema({
   label: { type: String, required: true },
   value: { type: String, required: true },
   iconName: { type: String, default: "Award" },
+  published: { type: Boolean, default: true },
 });
 
 // Recommendation Schema for Institutional Endorsements
@@ -198,6 +205,7 @@ const RecommendationSchema = new mongoose.Schema({
   featured: { type: Boolean, default: false },
   isFeatured: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
+  published: { type: Boolean, default: true },
 });
 
 // Social Link Schema for Organization Handles
@@ -246,11 +254,15 @@ const SocialLink = mongoose.model("SocialLink", SocialLinkSchema);
 const Subscriber = mongoose.model("Subscriber", SubscriberSchema);
 const JobPost = mongoose.model("JobPost", JobPostSchema);
 
-// Admin Config Schema (stores persistent admin password in MongoDB)
+// The legacy password field remains available only so existing records can be migrated.
 const AdminConfigSchema = new mongoose.Schema({
   key: { type: String, default: "admin_credentials", unique: true },
   username: { type: String, default: "admin" },
-  password: { type: String, default: "BreatAdmin#2026!" },
+  password: { type: String, select: false },
+  passwordHash: { type: String, select: false },
+  passwordSalt: { type: String, select: false },
+  sessionTokenHash: { type: String, select: false },
+  sessionExpiresAt: { type: Date, select: false },
 });
 
 const AdminConfig = mongoose.models.AdminConfig || mongoose.model("AdminConfig", AdminConfigSchema);
@@ -262,6 +274,7 @@ const HeroSlideSchema = new mongoose.Schema(
     subtitle: { type: String },
     image: { type: String, required: true },
     order: { type: Number, default: 0 },
+    published: { type: Boolean, default: true },
   },
   { strict: false }
 );
